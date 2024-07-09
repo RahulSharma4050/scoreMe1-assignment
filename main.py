@@ -33,15 +33,41 @@ Example:
 """
 
 def longest_path(graph: list) -> int:
-    # Your implementation goes here
-    pass
-
-# Helper function to perform topological sort
-def topological_sort(graph):
-    # Your implementation goes here
-    pass
-
-# Function to calculate longest path using topological sort
-def calculate_longest_path(graph, topo_order):
-    # Your implementation goes here
-    pass
+    n = len(graph)
+    
+    # Step 1: Topological sorting using DFS
+    def topological_sort():
+        visited = [False] * n
+        topo_order = []
+        
+        def dfs(node):
+            visited[node] = True
+            for neighbor, weight in graph[node]:
+                if not visited[neighbor]:
+                    dfs(neighbor)
+            topo_order.append(node)
+        
+        for i in range(n):
+            if not visited[i]:
+                dfs(i)
+        
+        topo_order.reverse()
+        return topo_order
+    
+    topo_order = topological_sort()
+    
+    # Step 2: Initialize distances
+    dist = [-float('inf')] * n
+    dist[topo_order[0]] = 0
+    
+    # Step 3: Process nodes in topological order and relax edges
+    for u in topo_order:
+        if dist[u] != -float('inf'):  # Only process reachable nodes
+            for v, weight in graph[u]:
+                if dist[v] < dist[u] + weight:
+                    dist[v] = dist[u] + weight
+    
+    # Step 4: Find the maximum distance in dist array
+    max_distance = max(dist)
+    
+    return max_distance
